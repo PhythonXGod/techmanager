@@ -1,0 +1,146 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" style="color:rgb(255, 255, 255);">Pieprasījumu menedžeris</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor02">
+       <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+             <a class="nav-link" (click)="onOpenModal(null!, 'add')" style="background-color: green;">Pievienot<span class="sr-only">(current)</span></a>
+          </li>
+       </ul>
+       <form class="form-inline my-2 my-lg-0">
+          <input type="search" (ngModelChange)="searchTechs(key.value)" #key="ngModel" ngModel
+           name="key" id="searchName" class="form-control mr-sm-2" placeholder="Meklēt" required>
+       </form>
+    </div>
+  </nav>
+  <div class="container" id="main-container">
+  <div class="row">
+    <div *ngFor="let tech of techs" class="col-md-6 col-xl-3">
+       <div class="card m-b-30">
+          <div class="card-body row">
+             <div class="col-6 card-title align-self-center mb-0">
+                <h5>{{tech?.name}}</h5>
+                <p class="m-0">Pamatojums: {{tech?.description}}</p>
+             </div>
+          </div>
+          <ul class="list-group list-group-flush">
+             <li class="list-group-item">Daudzums: {{tech?.properties}}</li>
+             <li class="list-group-item">Pieteikuma laiks: {{ dota() }}</li>
+          </ul>
+          <div class="card-body">
+             <div class="float-right btn-group btn-group-sm">
+                <a (click)="onOpenModal(tech, 'edit')" class="btn btn-primary tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil"></i> </a>
+                <a (click)="onOpenModal(tech, 'delete')" class="btn btn-warning tooltips" data-placement="top" data-original-title="Delete"><i class="fa fa-times"></i></a>
+             </div>
+          </div>
+       </div>
+    </div>
+  </div>
+  
+  <!-- Add tech Modal -->
+  <div class="modal fade" id="addTechModal" tabindex="-1" role="dialog" aria-labelledby="addTechModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="addTechModalLabel">Pievienot pieprasījumu</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form #addForm="ngForm" (ngSubmit)="onAddTech(addForm)">
+            <div class="form-group">
+               <label for="name">Nosaukums</label>
+               <input type="text" ngModel name="name" class="form-control" id="name" placeholder="Nosaukums" required>
+            </div>
+            <div class="form-group">
+               <label for="properties">Daudzums</label>
+               <input type="number" ngModel name="properties" class="form-control" id="properties" placeholder="Daudzums" required>
+            </div>
+            <div class="form-group">
+               <label for="description">Pamatojums</label>
+               <input type="text" ngModel name="description" class="form-control" id="description" placeholder="Pamatojums" required>
+            </div>
+            <div class="form-group">
+               <label for="regtime">Reģistrācijas laiks</label>
+               <input type="datetime-local" ngModel name="regtime" class="form-control" id="regtime" placeholder="regtime" required value="{{ dota() }}">
+            </div>
+            <div class="modal-footer">
+               <button type="button" id="add-tech-form" class="btn btn-secondary" data-dismiss="modal">Aizvērt</button>
+               <button type="submit" class="btn btn-primary" >Saglabāt</button>
+            </div>
+            </form>
+         </div>
+      </div>
+    </div>
+    </div>
+  <!-- Edit Modal -->
+  <div class="modal fade" id="updateTechModal" tabindex="-1" role="dialog" aria-labelledby="TechEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title" id="updateTechModalLabel">Edit tech {{editTech?.name}}</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+             </button>
+          </div>
+          <div class="modal-body">
+             <form #editForm="ngForm">
+                <div class="form-group">
+                   <label for="name">Nosaukums</label>
+                   <input type="text" ngModel="{{editTech?.name}}" name="name" class="form-control" id="name" aria-describedby="propertiesHelp" placeholder="Name">
+                </div>
+                <input type="hidden" ngModel="{{editTech?.id}}" name="id" class="form-control" id="id" placeholder="Daudzums">
+                <input type="hidden" ngModel="{{editTech?.techCode}}" name="userCode" class="form-control" id="userCode" placeholder="Daudzums">
+                <div class="form-group">
+                   <label for="properties">Daudzums</label>
+                   <input type="number" ngModel="{{editTech?.properties}}" name="properties" class="form-control" id="properties" placeholder="Daudzums">
+                </div>
+                <div class="form-group">
+                   <label for="regtime">Pamatojums</label>
+                   <input type="text" ngModel="{{editTech?.description}}" name="description" class="form-control" id="description" placeholder="Pamatojums">
+                </div>
+                <div class="form-group">
+                   <label for="regtime">Reģistrācijas laiks</label>
+                   <input type="date" ngModel="{{editTech?.regtime}}" name="regtime" class="form-control" id="regtime" name="regtime" placeholder="regtime">
+                </div>
+                <div class="modal-footer">
+                   <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                   <button (click)="onUpdateTech(editForm.value)" data-dismiss="modal" class="btn btn-primary" >Saglabāt</button>
+                </div>
+             </form>
+          </div>
+       </div>
+    </div>
+  </div>
+  <!-- Delete Modal -->
+  <div class="modal fade" id="deleteTechModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title" id="deleteModalLabel">Dzēst pieprasījumu</h5>
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+             </button>
+          </div>
+          <div class="modal-body">
+             <p>Vai pārliecināti, ka vēlaties dzēst šo peiprasījumu? {{deleteTech?.name}}?</p>
+             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Nē</button>
+                <button (click)="onDeleteTech(deleteTech!.id)" class="btn btn-danger" data-dismiss="modal">Jā</button>
+             </div>
+          </div>
+       </div>
+    </div>
+  </div>
+  </div>
+  <!-- Notification for no techs -->
+  <div *ngIf="techs?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">Nav pieprasījumu</h4>
+    <p>Pievienojiet pieprasījumu!</p>
+  </div>
+  </div>
+  
